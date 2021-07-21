@@ -243,7 +243,7 @@ namespace SearcherConsole
                 htmlParser();
             }
 
-            return URISearhcer(searchedValue);
+            return URLSearhcer(searchedValue);
         }
 
         private static string writeContent(string uri)
@@ -259,8 +259,8 @@ namespace SearcherConsole
                     while (!sr.EndOfStream)
                         html.Add(sr.ReadLine() + "\n");
                 }
-                URIData.data = html;
-                URIData.uri = uri;
+                URLData.data = html;
+                URLData.uri = uri;
             }
             catch (Exception ex)
             {
@@ -270,9 +270,9 @@ namespace SearcherConsole
         }
 
 
-        private static string URISearhcer(string searchedValue)
+        private static string URLSearhcer(string searchedValue)
         {
-            var content = URIData.data.ToList();
+            var content = URLData.data.ToList();
             int lineNumber = 1;
             var listResults = new List<string>();
             listResults.Add("Searched data : " + searchedValue);
@@ -295,7 +295,7 @@ namespace SearcherConsole
 
         private static void htmlParser()
         {
-            var htmlLinesList = URIData.data;
+            var htmlLinesList = URLData.data;
             var urlParsedData = new List<string>();
             const char startSymbol = '>';
             const char endSymbol = '<';
@@ -334,7 +334,7 @@ namespace SearcherConsole
                 }
             }
 
-            URIData.data = urlParsedData;
+            URLData.data = urlParsedData;
         }
 
         #endregion
