@@ -10,93 +10,97 @@ namespace SearcherConsole
 {
     public class Program
     {
+        #region Constants
 
+        public const string FILE_FLAG = "-f";
+        public const string DIRECTORY_FLAG = "-d";
+        public const string URL_FLAG = "-u";
+
+
+        public const string HELP_COMMAND = "Commands : \nhelp - show possible commands\n" +
+                "-f <filePath> <word> or <\"sentence\">\n" +
+                "-d <directoryPath> <word> or <\"sentence\">\n" +
+                "-u <url> <word> or <\"sentence\">\n" +
+                "Do not use brackets \"<,>\"";
+
+
+
+        public const string BAD_INPUT_MESSAGE = "Bad Input!\n" +
+            "You need to enter :\n" +
+            "flag (-f, -d, -u)\n" +
+            "path\n" +
+            "searched text\n" +
+            "Enter \"help\" to see possible commands";
+
+        #endregion
         #region Functions
 
-        public static void selector(ref string OutputValue, string line)
+        public static string operationSelector(string[] args)
         {
-            if (line.Equals("help"))
+
+            string flag = args[0];
+            string pathToSource = args[1];
+            string searchedValue = args[2];
+            if (flag.Equals(FILE_FLAG))
             {
-                OutputValue = helpSelected();
+                return fileSelected(pathToSource, searchedValue);
             }
-            else
+            else if (flag.Equals(DIRECTORY_FLAG))
             {
-                if (line.StartsWith("-f"))
-                {
-                    OutputValue = fileSelected(line);
-                }
-                else if (line.StartsWith("-d"))
-                {
-                    OutputValue = directorySelected(line);
-                }
-                else if (line.StartsWith("-u"))
-                {
-                    OutputValue = uriSelected(line);
-                }
-                else
-                {
-                    OutputValue = "Bad input";
-                }
+                return directorySelected(pathToSource, searchedValue);
+            }else if (flag.Equals(URL_FLAG))
+            {
+                return urlSelected(pathToSource, searchedValue);
             }
+            return BAD_INPUT_MESSAGE;
         }
         #region File Selected
-        private static string fileSelected(string line)
+        private static string fileSelected(string pathToSource,string searchedValue)
         {
             string result = string.Empty;
+            const int MAX_NUMB_ITERATION = 50;
+            int currentIteration = 0;
             try
             {
-                
-                line = line.Substring(3).Trim();
-                var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-                if(elements.Count == 1) { return "Bad Input"; }
-
-                if (!elements.ToString().EndsWith(@"\"))
+                string FILENAME = getFileName(pathToSource);
+                if (!FILENAME.EndsWith(".txt")) return BAD_INPUT_MESSAGE;
+                string path = Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string filepath;
+                do
                 {
-                    string FILENAME = getFileName(line, elements);
-                    string path = Path.GetFullPath(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                    string filepath;
-                    do
+                    path = Path.GetDirectoryName(path);
+                    filepath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, FILENAME);
+                    if (filepath.StartsWith(@"\\") || currentIteration >= MAX_NUMB_ITERATION)
                     {
-                        path = Path.GetDirectoryName(path);
-                        filepath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, FILENAME);
-                        if (filepath.StartsWith(@"\\"))
-                        {
-                            return "File not found";
-                        }
-                    } while (!File.Exists(filepath));
-                    Console.WriteLine(filepath);
-
-                    using (var reader = new StreamReader(filepath))
-                    {
-                        var content = new List<string>();
-                        while (!reader.EndOfStream)
-                        {
-                            content.Add(reader.ReadLine());
-                        }
-
-                        FileData.filePath = filepath;
-                        FileData.data = content;
-                        result = searcher(elements[1]);
+                        return "File not found";
                     }
-                }
-                else
+                    currentIteration++;
+                } while (!File.Exists(filepath));
+                Console.WriteLine(filepath);
+
+                using (var reader = new StreamReader(filepath))
                 {
-                    result = "Bad Input";
-                }
+                    var content = new List<string>();
+                    while (!reader.EndOfStream)
+                    {
+                        content.Add(reader.ReadLine());
+                    }
+                    FileData.filePath = filepath;
+                    FileData.data = content;
+                    result = searcher(searchedValue);
+                 }                
             }
             catch (Exception ex)
             {
-                return "Bad Input";
+                return BAD_INPUT_MESSAGE;
             }
             return result;
         }
 
 
-        private static string getFileName(string line, List<string> elements)
-        {
-
-
-            string FileName = @elements[0];
+        private static string getFileName(string pathToSource)
+        { 
+            string FileName = @pathToSource;
             var temp_list = FileName.Split((char)92);
 
             string FILENAME = temp_list[temp_list.Length - 2] + ((char)92) + temp_list[temp_list.Length - 1];
@@ -106,91 +110,82 @@ namespace SearcherConsole
 
         private static string searcher(string searchedValue)
         {
-            if (searchedValue.StartsWith(((char)34).ToString()) && searchedValue.EndsWith(((char)34).ToString()))
-            {
-                searchedValue = searchedValue.Substring(1);
-                searchedValue = searchedValue.Substring(0, searchedValue.Length - 1);
-            }
             var content = FileData.data.ToList();
             int lineNumber = 1;
-            var listResults = new List<string>();
-            listResults.Add("Searched data : " + searchedValue);
+            var outputList = new List<string>();
+            outputList.Add("Searched data : " + searchedValue);
             foreach (var line in content)
             {
                 if (line.Contains(searchedValue))
                 {
-                    listResults.Add("Line Number : " + lineNumber.ToString() + "\nLine: " + line.ToString() + "\n");
+                    outputList.Add("Line Number : " + lineNumber.ToString() + "\nLine: " + line.ToString());
                 }
                 lineNumber++;
             }
-            string res = "Bad Input Data";
-            if (listResults.Count == 1)
+            if (outputList.Count == 1)
             {
-                res = "No matches found";
+                return "No matches found";
             }
-            else
-            {
-                res = string.Join("\n", listResults.ToArray());
-            }
-            return res;
+            return string.Join("\n", outputList.ToArray()); 
         }
 
         #endregion
 
         #region Folder Selected
-        private static string directorySelected(string line)
+        private static string directorySelected(string pathToSource, string searchedValue)
         {
             try
             {
                 string result = string.Empty;
-                line = line.Substring(3).Trim();
-                var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-                if(elements.Count == 1) { return "Bad Input"; }
-                if (!getFiles(elements[0]))
+                if (!getFiles(@pathToSource))
                 {
-                    return "Bad Input";
+                    return BAD_INPUT_MESSAGE;
                 }
-                return getContent(elements[1]);
+                return getContent(searchedValue);
             }
             catch (Exception ex)
             {
-                return "Bad Input";
+                return BAD_INPUT_MESSAGE;
             }
 
         }
 
         private static string getContent(string searchedValue)
         {
-            var temp_list = new List<string>();
+            var files = new List<string>();
             foreach (var item in FolderData.allFiles)
             {
                 if (item.ToString().EndsWith(".txt") || item.ToString().EndsWith(".docx"))
                 {
-                    temp_list.Add(item);
+                    files.Add(item);
                 }
             }
 
-            if (temp_list.Count == 0)
+            if (files.Count == 0)
             {
                 return "Folder don't exist .txt or .docx files";
             }
-            for (int i = 0; i < temp_list.Count; ++i)
+
+            for (int i = 0; i < files.Count; ++i)
             {
                 var temp_list_Lines = new List<string>();
-                using (StreamReader stream = new StreamReader(@temp_list[i]))
+
+                using (StreamReader stream = new StreamReader(@files[i]))
                 {
                     while (!stream.EndOfStream)
                         temp_list_Lines.Add(stream.ReadLine());
                 }
+
                 int lineNumber = 1;
+
                 foreach (var line in temp_list_Lines)
                 {
                     if (line.Contains(searchedValue))
                     {
-                        string toSet = "File : " + temp_list[i];
+                        string toSet = "File : " + files[i];
                         if (!FolderData.results.Contains(toSet))
                         {
-                            FolderData.results.Add("File : " + temp_list[i]);
+                            FolderData.results.Add("File : " + files[i]);
                         }
                         FolderData.results.Add("Line number : " + lineNumber.ToString() + "\nLine : \n" + line);
 
@@ -204,8 +199,8 @@ namespace SearcherConsole
                 return "No matches found";
             }
 
-
-            return string.Join("\n", FolderData.results.ToArray());
+            string tempLine = "Searched Value : " + searchedValue + "\n";
+            return tempLine + string.Join("\n", FolderData.results.ToArray());
         }
         private static bool getFiles(string path)
         {
@@ -223,18 +218,16 @@ namespace SearcherConsole
         }
 
         #endregion
+
         #region URI Selected
-        private static string uriSelected(string line)
+        private static string urlSelected(string pathToSource,string searchedValue)
         {
-            line = line.Substring(3).Trim();
-            var elements = line.Split(new string[] { " - " }, StringSplitOptions.None).ToList();
-            if (elements.Count == 1) { return "Bad Input"; }
-            if (writeContent(elements[0]).ToString().Equals("Bad URI"))
+            if (writeContent(pathToSource).ToString().Equals("Bad URI"))
             {
                 return "Bad URI";
             }
 
-            string result = URISearhcer(elements[1]);
+            string result = URISearhcer(searchedValue);
             return result;
         }
 
@@ -272,7 +265,7 @@ namespace SearcherConsole
             {
                 if (line.Contains(searchedValue))
                 {
-                    listResults.Add("Line Number : " + lineNumber + "\n" + "Line : " + line.ToString() + "\n");
+                    listResults.Add("Line Number : " + lineNumber + "\n" + "Line : " + line.ToString());
                 }
                 lineNumber++;
             }
@@ -285,43 +278,28 @@ namespace SearcherConsole
             return result;
         }
         #endregion
-        private static string helpSelected()
-        {
-            string resultLine = "Commands : \nhelp - show possible commands\n" +
-                " -f <filepath> - <word> or <\"sentence\">\n" +
-                " -d <directorypath> - <word> or <\"sentence\">\n" +
-                " -u <url> - <word> or <\"sentence\">\n" +
-                " exit - close application\n" +
-                " Do not use brackets \"<,>\"";
-            return resultLine;
-        }
+        
         #endregion
         static void Main(string[] args)
         {
-            string command = string.Empty;
-            string startLine = "console line > ";
-            while (true)
+
+            if (args.Length == 0)
             {
-                string res = string.Empty;
-                Console.Write(startLine);
-                command = Console.ReadLine();
-                if (command.Equals("exit"))
-                {
-                    break;
-                }
-                else if (command.Equals("clear"))
-                {
-                    Console.Clear();
-
-                } 
-                else
-                {
-                    selector(ref res, command);
-                    Console.WriteLine(res);
-
-                }
+                Console.WriteLine("Empty Input");
             }
-            
+            else if (args.Length == 1 && args[0].ToString().Trim().Equals("help"))
+            {
+                Console.WriteLine(HELP_COMMAND);
+            }
+            else if (args.Length == 3)
+            {
+                Console.WriteLine(operationSelector(args));
+            }
+            else
+            {
+                Console.WriteLine(BAD_INPUT_MESSAGE);
+            }
+
         }
     }
 }
