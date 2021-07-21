@@ -15,13 +15,17 @@ namespace SearcherConsole
         public const string FILE_FLAG = "-f";
         public const string DIRECTORY_FLAG = "-d";
         public const string URL_FLAG = "-u";
+        public const string URL_PARSED_FLAG = "-up";
 
 
         public const string HELP_COMMAND = "Commands : \nhelp - show possible commands\n" +
                 "-f <filePath> <word> or <\"sentence\">\n" +
                 "-d <directoryPath> <word> or <\"sentence\">\n" +
                 "-u <url> <word> or <\"sentence\">\n" +
-                "Do not use brackets \"<,>\"";
+                "-up <url> <word> or <\"sentence\">\n" +
+                "Use -up to show parsed web page content\n" +
+                "Do not use brackets \"<,>\"\n";
+                
 
 
 
@@ -48,9 +52,17 @@ namespace SearcherConsole
             else if (flag.Equals(DIRECTORY_FLAG))
             {
                 return directorySelected(pathToSource, searchedValue);
-            }else if (flag.Equals(URL_FLAG))
+            }else if (flag.Equals(URL_FLAG) || flag.Equals(URL_PARSED_FLAG))
             {
-                return urlSelected(pathToSource, searchedValue);
+                if (flag.Equals(URL_PARSED_FLAG))
+                {
+                    return urlSelected(pathToSource, searchedValue, true);
+                }
+                else
+                {
+                    return urlSelected(pathToSource, searchedValue, false);
+                } 
+
             }
             return BAD_INPUT_MESSAGE;
         }
@@ -220,15 +232,18 @@ namespace SearcherConsole
         #endregion
 
         #region URI Selected
-        private static string urlSelected(string pathToSource,string searchedValue)
+        private static string urlSelected(string pathToSource,string searchedValue, bool isParsed)
         {
             if (writeContent(pathToSource).ToString().Equals("Bad URI"))
             {
                 return "Bad URI";
             }
+            if (isParsed)
+            {
+                htmlParser();
+            }
 
-            string result = URISearhcer(searchedValue);
-            return result;
+            return URISearhcer(searchedValue);
         }
 
         private static string writeContent(string uri)
@@ -277,6 +292,51 @@ namespace SearcherConsole
             string result = string.Join("\n", listResults.ToArray());
             return result;
         }
+
+        private static void htmlParser()
+        {
+            var htmlLinesList = URIData.data;
+            var urlParsedData = new List<string>();
+            const char startSymbol = '>';
+            const char endSymbol = '<';
+            foreach (var line in htmlLinesList)
+            {
+                char[] arrS = line.ToCharArray();
+
+                int startIndex = -1;
+                int endIndex = -1;
+                int distance = -1;
+
+                int cutIndexFrom = 0;
+                int cutIndexTo = 0;
+                for (int i = 0; i < arrS.Length; ++i)
+                {
+                    if (arrS[i] == startSymbol)
+                    {
+                        startIndex = i;
+                    }
+
+                    if (arrS[i] == endSymbol)
+                    {
+                        endIndex = i;
+                        if (distance < (endIndex - startIndex))
+                        {
+                            distance = endIndex - startIndex;
+                            cutIndexFrom = startIndex;
+                            cutIndexTo = endIndex;
+                        }
+                    }
+                }
+                if ((cutIndexTo - cutIndexFrom - 1) > 0)
+                {
+                    string newLine = line.Substring(cutIndexFrom + 1, (cutIndexTo - cutIndexFrom - 1));
+                    urlParsedData.Add(newLine.Trim());
+                }
+            }
+
+            URIData.data = urlParsedData;
+        }
+
         #endregion
         
         #endregion
