@@ -46,6 +46,7 @@
     <Compile Include="FileSelected.cs" />
     <Compile Include="Flag.cs" />
     <Compile Include="FolderSelected.cs" />
+    <Compile Include="ISelectedType.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="OperationSelector.cs" />
     <Compile Include="Program.cs" />

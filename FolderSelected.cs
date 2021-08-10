@@ -17,7 +17,7 @@ namespace SearcherConsole
             this.searchedValue = searchedValue;
         }
 
-        public string directorySelected(string pathToSource)
+        public string getResult(string pathToSource)
         {
             try
             {

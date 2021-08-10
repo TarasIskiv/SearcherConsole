@@ -19,24 +19,24 @@ namespace SearcherConsole
             if (flag.Equals(Flag.FILE_FLAG))
             {
                 FileSelected file = new FileSelected(searchedValue);
-                return file.fileSelected(pathToSource);
+                return file.getResult(pathToSource);
             }
             else if (flag.Equals(Flag.DIRECTORY_FLAG))
             {
                 FolderSelected folder = new FolderSelected(searchedValue);
-                return folder.directorySelected(pathToSource);
+                return folder.getResult(pathToSource);
             }
             else if (flag.Equals(Flag.URL_FLAG) || flag.Equals(Flag.URL_PARSED_FLAG))
             {
                 if (flag.Equals(Flag.URL_PARSED_FLAG))
                 {
                     URLSelected url = new URLSelected(searchedValue, true);
-                    return url.urlSelected(pathToSource);
+                    return url.getResult(pathToSource);
                 }
                 else
                 {
                     URLSelected url = new URLSelected(searchedValue, false);
-                    return url.urlSelected(pathToSource);
+                    return url.getResult(pathToSource);
                 }
 
             }

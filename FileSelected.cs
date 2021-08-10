@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal class FileSelected
+    internal class FileSelected : ISelectedType
     {
         internal string filePath;
         internal List<string> data;
@@ -21,7 +21,7 @@ namespace SearcherConsole
         }
 
 
-        public string fileSelected(string pathToSource)
+        public string getResult(string pathToSource)
         {
             string result = string.Empty;
             const int MAX_NUMB_ITERATION = 50;

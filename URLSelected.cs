@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal class URLSelected
+    internal class URLSelected : ISelectedType
     {
         internal string url;
         internal List<string> data;
@@ -21,7 +21,7 @@ namespace SearcherConsole
             this.isParsed = isParsed;
         }
 
-        public string urlSelected(string pathToSource)
+        public string getResult(string pathToSource)
         {
             if (writeContent(pathToSource).ToString().Equals("Bad URI"))
             {
