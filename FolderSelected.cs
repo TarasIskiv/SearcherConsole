@@ -7,94 +7,101 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal class FolderSelected
+    internal class FolderSelected : SelectType
     {
-        internal List<string> allFiles;
-        internal List<string> results = new List<string>();
-        internal string searchedValue;
-        public FolderSelected(string searchedValue) 
+        private List<string> _allFiles;
+        private List<string> _results = new List<string>();
+        private const string fileEndsWith = ".txt";
+
+        public List<string> AllFiles { get => _allFiles; set => _allFiles = value; }
+        public List<string> Results { get => _results; set => _results = value; }
+
+        public FolderSelected(string searchedValue)
         {
             this.searchedValue = searchedValue;
         }
-
-        public string getResult(string pathToSource)
+        public override string getResult(string pathToSource)
         {
             try
             {
-                string result = string.Empty;
                 if (!getFiles(@pathToSource))
                 {
                     return Message.BAD_INPUT;
                 }
+
                 return getContent(searchedValue);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Message.BAD_INPUT;
             }
-
         }
 
         private string getContent(string searchedValue)
         {
-            var files = new List<string>();
-            foreach (var item in this.allFiles)
+            var filesFromFolder = new List<string>();
+            int lineNumber = 1;
+
+            foreach (var item in _allFiles)
             {
-                if (item.ToString().EndsWith(".txt") || item.ToString().EndsWith(".docx"))
+                if (item.ToString().EndsWith(fileEndsWith))
                 {
-                    files.Add(item);
+                    filesFromFolder.Add(item);
                 }
             }
 
-            if (files.Count == 0)
+            if (filesFromFolder.Count == 0)
             {
-                return "Folder don't exist .txt or .docx files";
+                return Message.FOLDER_WITHOUT_TXT_FILES;
             }
 
-            for (int i = 0; i < files.Count; ++i)
-            {
-                var temp_list_Lines = new List<string>();
 
-                using (StreamReader stream = new StreamReader(@files[i]))
+            for (int i = 0; i < filesFromFolder.Count; ++i)
+            {
+                var temporaryListOfLines = new List<string>();
+
+                using (StreamReader stream = new StreamReader(@filesFromFolder[i]))
                 {
                     while (!stream.EndOfStream)
-                        temp_list_Lines.Add(stream.ReadLine());
+                    {
+                        temporaryListOfLines.Add(stream.ReadLine());
+                    }
                 }
 
-                int lineNumber = 1;
-
-                foreach (var line in temp_list_Lines)
+                foreach (var line in temporaryListOfLines)
                 {
                     if (line.Contains(searchedValue))
                     {
-                        string toSet = "File : " + files[i];
-                        if (!this.results.Contains(toSet))
+                        string toSet = "File : " + filesFromFolder[i];
+
+                        if (!_results.Contains(toSet))
                         {
-                            this.results.Add("File : " + files[i]);
+                            _results.Add("File : " + filesFromFolder[i]);
                         }
-                        this.results.Add("Line number : " + lineNumber.ToString() + "\nLine : " + line);
+
+                        _results.Add("Line number : " + lineNumber.ToString() + "\nLine : " + line);
 
                     }
+
                     lineNumber++;
                 }
             }
 
-            if (this.results.Count == 0)
+            if (_results.Count == 0)
             {
-                return "No matches found";
+                return Message.NO_MATCHES;
             }
 
-            string tempLine = "Searched Value : " + searchedValue + "\n";
-            return tempLine + string.Join("\n", this.results.ToArray());
+            return "Searched Value : " + searchedValue + "\n" + string.Join("\n", _results.ToArray());
         }
         private bool getFiles(string path)
         {
             try
             {
                 var list = Directory.GetFiles(path);
-                this.allFiles = list.ToList();
+                _allFiles = list.ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

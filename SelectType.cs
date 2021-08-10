@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal interface ISelectedType
+    internal abstract class SelectType
     {
-        string getResult(string pathToSource);
+        protected string searchedValue;
+
+        public abstract string getResult(string pathToSource);
     }
 }

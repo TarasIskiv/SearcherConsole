@@ -8,26 +8,30 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal class URLSelected : ISelectedType
+    internal class URLSelected : SelectType
     {
-        internal string url;
-        internal List<string> data;
-        internal string searchedValue;
-        internal bool isParsed;
+        private string _url;
+        private List<string> _data;
+        private bool _isParsed;
+
+        public string Url { get => _url; set => _url = value; }
+        public List<string> Data { get => _data; set => _data = value; }
+        public bool IsParsed { get => _isParsed; set => _isParsed = value; }
 
         public URLSelected(string searchedValue, bool isParsed) 
         {
             this.searchedValue = searchedValue;
-            this.isParsed = isParsed;
+            IsParsed = isParsed;
         }
 
-        public string getResult(string pathToSource)
+        public override string getResult(string pathToSource)
         {
-            if (writeContent(pathToSource).ToString().Equals("Bad URI"))
+            if (writeContent(pathToSource).ToString().Equals("Bad URL"))
             {
-                return "Bad URI";
+                return "Bad URL";
             }
-            if (isParsed)
+
+            if (_isParsed)
             {
                 htmlParser();
             }
@@ -35,77 +39,82 @@ namespace SearcherConsole
             return URLSearhcer(searchedValue);
         }
 
-        private string writeContent(string uri)
+        private string writeContent(string url)
         {
             var html = new List<string>();
             try
             {
-                WebRequest request = WebRequest.Create(uri);
+                WebRequest request = WebRequest.Create(url);
                 WebResponse response = request.GetResponse();
                 Stream data = response.GetResponseStream();
-                using (StreamReader sr = new StreamReader(data))
+                using (StreamReader stream = new StreamReader(data))
                 {
-                    while (!sr.EndOfStream)
-                        html.Add(sr.ReadLine() + "\n");
+                    while (!stream.EndOfStream)
+                    {
+                        html.Add(stream.ReadLine() + "\n");
+                    }   
                 }
-                this.data = html;
-                this.url = uri;
+
+                _data = html;
+                _url = url;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Bad URI";
+                return "Bad URL";
             }
-            return "Good URI";
+
+            return "Good URL";
         }
 
 
         private string URLSearhcer(string searchedValue)
         {
-            var content = this.data.ToList();
+            var content = _data.ToList();
             int lineNumber = 1;
-            var listResults = new List<string>();
-            listResults.Add("Searched data : " + searchedValue);
+            var listResults = new List<string>() { "Searched data : " + searchedValue };
             foreach (var line in content)
             {
                 if (line.Contains(searchedValue))
                 {
                     listResults.Add("Line Number : " + lineNumber + "\n" + "Line : " + line.ToString());
                 }
+
                 lineNumber++;
             }
 
             if (listResults.Count == 1)
             {
-                return "No matches found";
+                return Message.NO_MATCHES;
             }
-            string result = string.Join("\n", listResults.ToArray());
-            return result;
+
+            return string.Join("\n", listResults.ToArray());
         }
 
         private void htmlParser()
         {
-            var htmlLinesList = this.data;
+            var htmlLinesList = this._data;
             var urlParsedData = new List<string>();
             const char startSymbol = '>';
             const char endSymbol = '<';
+
             foreach (var line in htmlLinesList)
             {
-                char[] arrS = line.ToCharArray();
-
                 int startIndex = -1;
                 int endIndex = -1;
                 int distance = -1;
-
                 int cutIndexFrom = 0;
                 int cutIndexTo = 0;
-                for (int i = 0; i < arrS.Length; ++i)
+                char[] arrayFromLineInHtmlLineList = line.ToCharArray();
+               
+
+                for (int i = 0; i < arrayFromLineInHtmlLineList.Length; ++i)
                 {
-                    if (arrS[i] == startSymbol)
+                    if (arrayFromLineInHtmlLineList[i] == startSymbol)
                     {
                         startIndex = i;
                     }
 
-                    if (arrS[i] == endSymbol)
+                    if (arrayFromLineInHtmlLineList[i] == endSymbol)
                     {
                         endIndex = i;
                         if (distance < (endIndex - startIndex))
@@ -123,7 +132,7 @@ namespace SearcherConsole
                 }
             }
 
-            this.data = urlParsedData;
+            _data = urlParsedData;
         }
 
     }

@@ -8,38 +8,45 @@ namespace SearcherConsole
 {
     internal class OperationSelector
     {
+        private string flag;
+        private string pathToSource;
+        private string searchedValue;
         public OperationSelector() { }
 
-        public static string operationSelector(string[] args)
+        private void setParamaters(string[] args)
         {
+            flag = args[0];
+            pathToSource = args[1];
+            searchedValue = args[2];
+        }
+        public string selectOperation(string[] args)
+        {
+            setParamaters(args);
 
-            string flag = args[0];
-            string pathToSource = args[1];
-            string searchedValue = args[2];
             if (flag.Equals(Flag.FILE_FLAG))
             {
                 FileSelected file = new FileSelected(searchedValue);
                 return file.getResult(pathToSource);
             }
-            else if (flag.Equals(Flag.DIRECTORY_FLAG))
+
+            if (flag.Equals(Flag.DIRECTORY_FLAG))
             {
                 FolderSelected folder = new FolderSelected(searchedValue);
                 return folder.getResult(pathToSource);
             }
-            else if (flag.Equals(Flag.URL_FLAG) || flag.Equals(Flag.URL_PARSED_FLAG))
-            {
-                if (flag.Equals(Flag.URL_PARSED_FLAG))
-                {
-                    URLSelected url = new URLSelected(searchedValue, true);
-                    return url.getResult(pathToSource);
-                }
-                else
-                {
-                    URLSelected url = new URLSelected(searchedValue, false);
-                    return url.getResult(pathToSource);
-                }
 
+            if (flag.Equals(Flag.URL_PARSED_FLAG))
+            {
+                URLSelected url = new URLSelected(searchedValue, true);
+                return url.getResult(pathToSource);
             }
+
+            if(flag.Equals(Flag.URL_FLAG))
+            {
+                URLSelected url = new URLSelected(searchedValue, false);
+                return url.getResult(pathToSource);
+            }
+
             return Message.BAD_INPUT;
         }
     }

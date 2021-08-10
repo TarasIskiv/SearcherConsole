@@ -353,8 +353,8 @@ namespace SearcherConsole
             }
             else if (args.Length == 3)
             {
-
-                Console.WriteLine(OperationSelector.operationSelector(args));
+                OperationSelector selector = new OperationSelector();
+                Console.WriteLine(selector.selectOperation(args));
             }
             else
             {
