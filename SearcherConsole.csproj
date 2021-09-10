@@ -43,18 +43,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSelected.cs" />
+    <Compile Include="FileOperation\FileContent.cs" />
+    <Compile Include="FileOperation\FileFullPath.cs" />
+    <Compile Include="FileOperation\FileName.cs" />
+    <Compile Include="FileOperation\FileSelected.cs" />
     <Compile Include="Flag.cs" />
     <Compile Include="FolderSelected.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="OperationSelector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SelectType.cs" />
+    <Compile Include="SelectedType.cs" />
     <Compile Include="URLSelected.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FolderOperation\" />
+    <Folder Include="URLOperation\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

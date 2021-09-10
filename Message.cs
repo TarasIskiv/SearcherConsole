@@ -8,7 +8,12 @@ namespace SearcherConsole
 {
     internal class Message
     {
-        public Message() { }
+
+        public static readonly string FOLDER_WITHOUT_TXT_FILES = "Folder don't exist .txt files";
+
+        public static readonly string NO_MATCHES = "No matches found";
+
+        public static readonly string FILE_NOT_FOUND = "File not found";
 
         public static readonly string HELP_COMMAND = "Commands : \nhelp - show possible commands\n" +
                 "-f <filePath> <word> or <\"sentence\">\n" +
@@ -25,11 +30,5 @@ namespace SearcherConsole
             "searched text\n" +
             "Enter \"help\" to see possible commands";
         
-        public static readonly string FOLDER_WITHOUT_TXT_FILES = "Folder don't exist .txt or .docx files";
-
-        public static readonly string NO_MATCHES = "No matches found";
-
-        public static readonly string FILE_NOT_FOUND = "File not found";
-
     }
 }

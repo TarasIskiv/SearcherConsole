@@ -12,6 +12,5 @@ namespace SearcherConsole
         public static readonly string DIRECTORY_FLAG = "-d";
         public static readonly string URL_FLAG = "-u";
         public static readonly string URL_PARSED_FLAG = "-up";
-        public Flag() {}
     }
 }

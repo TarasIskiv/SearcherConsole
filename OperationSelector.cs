@@ -8,43 +8,37 @@ namespace SearcherConsole
 {
     internal class OperationSelector
     {
-        private string flag;
-        private string pathToSource;
-        private string searchedValue;
-        public OperationSelector() { }
-
-        private void setParamaters(string[] args)
+        private string _flag;
+        private string _pathToSource;
+        private string _searchedValue;
+        public OperationSelector(string[] args)
         {
-            flag = args[0];
-            pathToSource = args[1];
-            searchedValue = args[2];
+            _flag = args[0];
+            _pathToSource = args[1];
+            _searchedValue = args[2];
         }
-        public string selectOperation(string[] args)
+
+        public string selectOperation()
         {
-            setParamaters(args);
 
-            if (flag.Equals(Flag.FILE_FLAG))
+            if (_flag.Equals(Flag.FILE_FLAG))
             {
-                FileSelected file = new FileSelected(searchedValue);
-                return file.getResult(pathToSource);
+                 return new FileSelected(_searchedValue, _pathToSource).search();
             }
 
-            if (flag.Equals(Flag.DIRECTORY_FLAG))
+            if (_flag.Equals(Flag.DIRECTORY_FLAG))
             {
-                FolderSelected folder = new FolderSelected(searchedValue);
-                return folder.getResult(pathToSource);
+                return new FolderSelected(_searchedValue, _pathToSource).search();
             }
 
-            if (flag.Equals(Flag.URL_PARSED_FLAG))
+            if (_flag.Equals(Flag.URL_PARSED_FLAG))
             {
-                URLSelected url = new URLSelected(searchedValue, true);
-                return url.getResult(pathToSource);
+                return new URLSelected(_searchedValue, _pathToSource, true).search();
             }
 
-            if(flag.Equals(Flag.URL_FLAG))
+            if(_flag.Equals(Flag.URL_FLAG))
             {
-                URLSelected url = new URLSelected(searchedValue, false);
-                return url.getResult(pathToSource);
+                return new URLSelected(_searchedValue, _pathToSource, false).search();
             }
 
             return Message.BAD_INPUT;

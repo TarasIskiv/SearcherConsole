@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SearcherConsole
 {
-    internal class FolderSelected : SelectType
+    internal class FolderSelected : SelectedType
     {
         private List<string> _allFiles;
         private List<string> _results = new List<string>();
@@ -16,11 +16,12 @@ namespace SearcherConsole
         public List<string> AllFiles { get => _allFiles; set => _allFiles = value; }
         public List<string> Results { get => _results; set => _results = value; }
 
-        public FolderSelected(string searchedValue)
+        public FolderSelected(string searchedValue, string pathToSource)
         {
             this.searchedValue = searchedValue;
+            this.pathToSource = pathToSource;
         }
-        public override string getResult(string pathToSource)
+        public override string search()
         {
             try
             {
