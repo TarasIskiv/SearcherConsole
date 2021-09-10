@@ -46,7 +46,7 @@
     <Compile Include="FileOperation\FileContent.cs" />
     <Compile Include="FileOperation\FileFullPath.cs" />
     <Compile Include="FileOperation\FileName.cs" />
-    <Compile Include="FileOperation\FileSelected.cs" />
+    <Compile Include="FileOperation\FileTypeSelected.cs" />
     <Compile Include="Flag.cs" />
     <Compile Include="FolderSelected.cs" />
     <Compile Include="Message.cs" />
