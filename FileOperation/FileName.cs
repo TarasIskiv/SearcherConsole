@@ -21,12 +21,12 @@ namespace SearcherConsole.FileOperation
         {
             string FileName = @PathToSource;
             var temporaryListForFileName = FileName.Split((char)92);
-            string FILENAME =
+            string newFileName =
                 temporaryListForFileName[temporaryListForFileName.Length - 2]
                 + ((char)92)
                 + temporaryListForFileName[temporaryListForFileName.Length - 1];
 
-            return FILENAME;
+            return newFileName;
         }
     }
 }

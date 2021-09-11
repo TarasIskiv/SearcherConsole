@@ -9,10 +9,10 @@ namespace SearcherConsole.FileOperation
 {
     public class FileFullPath
     {
-        private string fileName;
+        private string _fileName;
         public FileFullPath(string fileName)
         {
-            this.fileName = fileName;
+            _fileName = fileName;
         }
 
         public string getFullPath()
@@ -24,7 +24,7 @@ namespace SearcherConsole.FileOperation
             do
             {
                 path = Path.GetDirectoryName(path);
-                fileFullPath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, fileName);
+                fileFullPath = String.Format("{0}{1}{2}", path, Path.DirectorySeparatorChar, _fileName);
 
                 if (fileFullPath.StartsWith(@"\\") || currentIteration >= MAX_NUMB_ITERATION)
                 {

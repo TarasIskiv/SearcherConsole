@@ -15,6 +15,10 @@ namespace SearcherConsole
 
         public static readonly string FILE_NOT_FOUND = "File not found";
 
+        public static readonly string BAD_URL = "Bad URL";
+        public static readonly string GOOD_URL = "Good URL";
+
+
         public static readonly string HELP_COMMAND = "Commands : \nhelp - show possible commands\n" +
                 "-f <filePath> <word> or <\"sentence\">\n" +
                 "-d <directoryPath> <word> or <\"sentence\">\n" +

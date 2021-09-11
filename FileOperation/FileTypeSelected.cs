@@ -15,7 +15,7 @@ namespace SearcherConsole
         {
             this.searchedValue = searchedValue;
             this.pathToSource = pathToSource;
-            this._fileFullPath = string.Empty;
+            _fileFullPath = string.Empty;
         }
 
         public override string search()
@@ -55,14 +55,14 @@ namespace SearcherConsole
         {
             try
             {
-                string FILENAME = new FileOperation.FileName(pathToSource).getFileName();
+                string fileName = new FileOperation.FileName(pathToSource).getFileName();
 
-                if (!FILENAME.EndsWith(".txt"))
+                if (!fileName.EndsWith(".txt"))
                 {
                     return false;
                 }
 
-                _fileFullPath = new FileOperation.FileFullPath(FILENAME).getFullPath();
+                _fileFullPath = new FileOperation.FileFullPath(fileName).getFullPath();
             }
             catch (Exception)
             {

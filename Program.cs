@@ -24,9 +24,6 @@ namespace SearcherConsole
             }
             else if (args.Length == 3)
             {
-                //OperationSelector selector = new OperationSelector(args);
-                //Console.WriteLine(selector.selectOperation());
-
                 Console.WriteLine(new OperationSelector(args).selectOperation());
             }
             else

@@ -28,17 +28,17 @@ namespace SearcherConsole
 
             if (_flag.Equals(Flag.DIRECTORY_FLAG))
             {
-                return new FolderSelected(_searchedValue, _pathToSource).search();
+                return new FolderTypeSelected(_searchedValue, _pathToSource).search();
             }
 
             if (_flag.Equals(Flag.URL_PARSED_FLAG))
             {
-                return new URLSelected(_searchedValue, _pathToSource, true).search();
+                return new URLTypeSelected(_searchedValue, _pathToSource, true).search();
             }
 
             if(_flag.Equals(Flag.URL_FLAG))
             {
-                return new URLSelected(_searchedValue, _pathToSource, false).search();
+                return new URLTypeSelected(_searchedValue, _pathToSource, false).search();
             }
 
             return Message.BAD_INPUT;
